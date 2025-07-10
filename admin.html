@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KAMBA Codex - Admin</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js" integrity="sha512-EVuTVvT3Tuw6m+b0i3psal1Hzce3NXL0r5t3v2n7JNYi1oVnaNDM7pnL2KV1v6VJqkwjO/4DKf3wcN1L3xU4JSA==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/htmlmixed/htmlmixed.min.js" integrity="sha512-Q2U71L6y2N2N8WEC3GkrESXJ+9oGqpW3G8iFeI8b9rgMEd+0oXQSALO5RHgG1xO2oGoU0j7tQ3vaw2p1sUOobzg==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js" integrity="sha512-J9D5MmnE+25hS2v2V7fV1/6bPZto3o2N9vH5M0UoW8rZWrJ+3b08k+KU8NTEjxg3XbY7ZgpC3O8Bm3z1oarqD/Q==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/css/css.min.js" integrity="sha512-Jh4WwvQh/3v5XENbQ2pE+6Evox2zqQN4JkbR+wi1ta2Vpk8J7A0uxt3dK1sD+/fZjeXU9Xj2T4V4b0Y1GXFdS/g==" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js" integrity="sha512-J45Rh6GHjXBaqKnP/Se2DwR+7hLu3n80g+Neg6hL3Jaxt2kQFL1N8C6fS0S0iWwcFnZ7u1W8Xisj/2nkr2mx6pg==" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css" integrity="sha512-uf06llspW44/LZpHzHT6qBOIVODjWtv4MxCricRxkzvopAlSWnTf6hpZTFxuuZcuNE9CBQhqE0Seu1CoRk84nCA==" crossorigin="anonymous">
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -27,12 +21,6 @@
       max-width: 32rem;
       margin-left: auto;
       margin-right: auto;
-    }
-    .CodeMirror {
-      height: 200px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      font-size: 14px;
     }
     .snippet-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -80,7 +68,6 @@
     .items-center { align-items: center; }
     .justify-between { justify-content: space-between; }
     .space-y-4 > * + * { margin-top: 1rem; }
-    .space-x-2 > * + * { margin-left: 0.5rem; }
     .w-full { width: 100%; }
     .p-3 { padding: 0.75rem; }
     .rounded-full { border-radius: 9999px; }
@@ -112,6 +99,7 @@
     .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
     .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
     .font-medium { font-weight: 500; }
+    .mt-12 { margin-top: 3rem; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -143,18 +131,7 @@
       <h2 id="formTitle" class="text-2xl font-bold text-gray-900 mb-6">Add New Snippet</h2>
       <div class="space-y-4">
         <input type="text" id="title" placeholder="Snippet Title" class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" />
-        <div class="flex space-x-2">
-          <div>
-            <label for="bgColor" class="text-sm font-medium text-gray-700">Editor Background:</label>
-            <input type="color" id="bgColor" value="#ffffff" class="w-12 h-8 p-0 border-none rounded cursor-pointer" />
-          </div>
-          <div>
-            <label for="textColor" class="text-sm font-medium text-gray-700">Editor Text:</label>
-            <input type="color" id="textColor" value="#000000" class="w-12 h-8 p-0 border-none rounded cursor-pointer" />
-          </div>
-        </div>
-        <textarea id="code" placeholder="Paste or type code here..." class="w-full p-3 rounded-xl border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm h-32 hidden"></textarea>
-        <div id="codeEditor"></div>
+        <textarea id="code" placeholder="Code" class="w-full p-3 rounded-xl border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm h-32"></textarea>
         <textarea id="description" placeholder="Description" class="w-full p-3 rounded-xl border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm h-24"></textarea>
         <input type="text" id="youtubeLink" placeholder="YouTube Link (e.g., https://www.youtube.com/watch?v=...)" class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm" />
         <input type="hidden" id="editId" value="">
@@ -167,21 +144,20 @@
     </section>
   </main>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js" integrity="sha256-fdPUs4nZKrH3oO2I2rWURs1s0t0h5a3T1Q4T1yNEuzQ=" crossorigin="anonymous"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js" integrity="sha256-f5Sz2A1fGq/0VPeR6W8QNQnC4O0oWjF7jD7eW0M2nD0=" crossorigin="anonymous"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js" integrity="sha256-5Kx7n6fVfer5eO3VyNq1q3z0cIuG+8VEydg3P4Q6jio=" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Wait for Firebase scripts to load
-      const checkFirebaseLoaded = setInterval(() => {
-        if (typeof firebase !== 'undefined' && firebase.app) {
-          clearInterval(checkFirebaseLoaded);
-          initializeApp();
-        }
-      }, 100);
-    });
+    (function KAMBA_ADMIN(fb) {
+      // Global error handler
+      window.onerror = function(msg, url, line, col, error) {
+        console.error('Script error:', { msg, url, line, col, error });
+        alert('An unexpected error occurred: ' + msg);
+        return false;
+      };
 
-    function initializeApp() {
+      // Initialize Firebase
+      let auth, db;
       try {
         const firebaseConfig = {
           apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
@@ -193,91 +169,67 @@
           appId: "1:442314397706:web:a69e3958257fb13b3667f3",
           measurementId: "G-S86S229F1T"
         };
+        fb.initializeApp(firebaseConfig);
+        auth = fb.auth();
+        db = fb.firestore();
+      } catch (error) {
+        console.error('Firebase initialization failed:', error);
+        alert('Failed to initialize Firebase: ' + error.message);
+        return;
+      }
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Initialize CodeMirror
-        let editor;
-        const codeTextarea = document.getElementById('code');
-        const bgColorInput = document.getElementById('bgColor');
-        const textColorInput = document.getElementById('textColor');
-
-        // Load saved colors from localStorage
-        const savedBgColor = localStorage.getItem('editorBgColor') || '#ffffff';
-        const savedTextColor = localStorage.getItem('editorTextColor') || '#000000';
-        bgColorInput.value = savedBgColor;
-        textColorInput.value = savedTextColor;
-
-        function initEditor(value = '') {
-          if (editor) {
-            editor.toTextArea();
-          }
-          editor = CodeMirror.fromTextArea(codeTextarea, {
-            mode: 'htmlmixed',
-            lineNumbers: true,
-            theme: 'default',
-            lineWrapping: true,
-            extraKeys: { 'Ctrl-Space': 'autocomplete' }
-          });
-          editor.setValue(value);
-          editor.getWrapperElement().style.backgroundColor = bgColorInput.value;
-          editor.getWrapperElement().style.color = textColorInput.value;
-
-          // Handle paste events for images
-          editor.getWrapperElement().addEventListener('paste', (event) => {
-            const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-            for (const item of items) {
-              if (item.type.indexOf('image') !== -1) {
-                event.preventDefault();
-                const file = item.getAsFile();
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                  const base64Image = e.target.result;
-                  const imgTag = `<img src="${base64Image}" style="max-width: 100px; margin: 5px;" />`;
-                  editor.replaceSelection(imgTag);
-                };
-                reader.readAsDataURL(file);
-              }
-            }
-          });
-        }
-
-        function updateEditorColors() {
-          if (editor) {
-            editor.getWrapperElement().style.backgroundColor = bgColorInput.value;
-            editor.getWrapperElement().style.color = textColorInput.value;
-            localStorage.setItem('editorBgColor', bgColorInput.value);
-            localStorage.setItem('editorTextColor', textColorInput.value);
-          }
-        }
-
-        bgColorInput.addEventListener('input', updateEditorColors);
-        textColorInput.addEventListener('input', updateEditorColors);
-
-        try {
-          initEditor();
-        } catch (error) {
-          console.error('CodeMirror initialization failed:', error);
-          alert('Failed to load code editor. Please try refreshing the page.');
-        }
-
-        // Check authentication state
+      // Authentication check
+      try {
         auth.onAuthStateChanged(user => {
-          if (!user) window.location.href = 'index.html';
+          if (!user) {
+            console.warn('No user authenticated, redirecting to index.html');
+            window.location.href = 'index.html';
+          }
+        }, error => {
+          console.error('Authentication state error:', error);
+          alert('Error checking authentication: ' + error.message);
         });
+      } catch (error) {
+        console.error('Error setting up auth listener:', error);
+        alert('Failed to initialize authentication: ' + error.message);
+      }
+
+      // Wait for DOM and Firebase
+      document.addEventListener('DOMContentLoaded', () => {
+        if (!fb || !fb.app) {
+          console.error('Firebase not loaded');
+          alert('Firebase failed to load. Please check your network.');
+          return;
+        }
 
         // Logout
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-          auth.signOut().then(() => {
-            window.location.href = 'index.html';
-          }).catch(error => alert('Logout failed: ' + error.message));
-        });
+        try {
+          const logoutBtn = document.getElementById('logoutBtn');
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+              try {
+                auth.signOut().then(() => {
+                  console.log('User signed out successfully');
+                  window.location.href = 'index.html';
+                }).catch(error => {
+                  console.error('Logout failed:', error);
+                  alert('Logout failed: ' + error.message);
+                });
+              } catch (error) {
+                console.error('Error during logout:', error);
+                alert('Logout error: ' + error.message);
+              }
+            }, { once: true });
+          }
+        } catch (error) {
+          console.error('Error binding logout button:', error);
+          alert('Failed to set up logout: ' + error.message);
+        }
 
         // Render posted snippets
         async function renderPostedSnippets() {
           const postedSnippets = document.getElementById('postedSnippets');
+          if (!postedSnippets) return;
           postedSnippets.innerHTML = '';
           try {
             const querySnapshot = await db.collection('snippets').get();
@@ -289,86 +241,97 @@
                 <div class="flex items-center">
                   <div>
                     <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
-                    <p class="text-sm text-gray-500">Mixed Code</p>
+                    <p class="text-sm text-gray-500">Code Snippet</p>
                   </div>
                 </div>
               `;
               card.addEventListener('click', () => {
-                document.getElementById('formTitle').textContent = 'Edit Snippet';
-                document.getElementById('addSnippetBtn').textContent = 'Update Snippet';
-                document.getElementById('editId').value = snippet.id;
-                document.getElementById('title').value = snippet.title;
-                editor.setValue(snippet.code);
-                document.getElementById('description').value = snippet.description;
-                document.getElementById('youtubeLink').value = snippet.youtubeLink || '';
-              });
+                try {
+                  document.getElementById('formTitle').textContent = 'Edit Snippet';
+                  document.getElementById('addSnippetBtn').textContent = 'Update Snippet';
+                  document.getElementById('editId').value = snippet.id;
+                  document.getElementById('title').value = snippet.title;
+                  document.getElementById('code').value = snippet.code;
+                  document.getElementById('description').value = snippet.description;
+                  document.getElementById('youtubeLink').value = snippet.youtubeLink || '';
+                } catch (error) {
+                  console.error('Error editing snippet:', error);
+                  alert('Failed to edit snippet: ' + error.message);
+                }
+              }, { once: true });
               postedSnippets.appendChild(card);
             });
           } catch (error) {
             console.error('Error fetching snippets:', error);
-            alert('Failed to load snippets. Please try again.');
+            alert('Failed to load snippets: ' + error.message);
           }
         }
 
         // Add or update snippet
-        document.getElementById('addSnippetBtn').addEventListener('click', async () => {
-          const title = document.getElementById('title').value;
-          const code = editor.getValue();
-          const description = document.getElementById('description').value;
-          const youtubeLink = document.getElementById('youtubeLink').value;
-          const editId = document.getElementById('editId').value;
+        try {
+          const addSnippetBtn = document.getElementById('addSnippetBtn');
+          if (addSnippetBtn) {
+            addSnippetBtn.addEventListener('click', async () => {
+              try {
+                const title = document.getElementById('title')?.value;
+                const code = document.getElementById('code')?.value;
+                const description = document.getElementById('description')?.value;
+                const youtubeLink = document.getElementById('youtubeLink')?.value;
+                const editId = document.getElementById('editId')?.value;
 
-          // Extract base64 images from code
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(code, 'text/html');
-          const pastedImages = Array.from(doc.querySelectorAll('img')).map(img => img.src).filter(src => src.startsWith('data:image/'));
+                if (!title || !code || !description) {
+                  alert('Please fill in title, code, and description.');
+                  return;
+                }
 
-          if (!title || !code || !description) {
-            alert('Please fill in title, code, and description.');
-            return;
+                if (editId) {
+                  await db.collection('snippets').doc(editId).update({
+                    title,
+                    code,
+                    description,
+                    youtubeLink
+                  });
+                  console.log('Snippet updated:', editId);
+                  alert('Snippet updated successfully!');
+                } else {
+                  const docRef = await db.collection('snippets').add({
+                    title,
+                    code,
+                    description,
+                    youtubeLink
+                  });
+                  console.log('Snippet added:', docRef.id);
+                  alert('Snippet added successfully!');
+                }
+
+                document.getElementById('formTitle').textContent = 'Add New Snippet';
+                document.getElementById('addSnippetBtn').textContent = 'Add Snippet';
+                document.getElementById('editId').value = '';
+                document.getElementById('title').value = '';
+                document.getElementById('code').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('youtubeLink').value = '';
+                await renderPostedSnippets();
+              } catch (error) {
+                console.error('Error saving snippet:', error);
+                alert('Error saving snippet: ' + error.message);
+              }
+            }, { once: true });
           }
+        } catch (error) {
+          console.error('Error binding add snippet button:', error);
+          alert('Failed to set up snippet form: ' + error.message);
+        }
 
-          try {
-            if (editId) {
-              await db.collection('snippets').doc(editId).update({
-                title,
-                code,
-                description,
-                youtubeLink,
-                pastedImages
-              });
-              alert('Snippet updated successfully!');
-            } else {
-              await db.collection('snippets').add({
-                title,
-                code,
-                description,
-                youtubeLink,
-                pastedImages
-              });
-              alert('Snippet added successfully!');
-            }
-            document.getElementById('formTitle').textContent = 'Add New Snippet';
-            document.getElementById('addSnippetBtn').textContent = 'Add Snippet';
-            document.getElementById('editId').value = '';
-            document.getElementById('title').value = '';
-            editor.setValue('');
-            document.getElementById('description').value = '';
-            document.getElementById('youtubeLink').value = '';
-            await renderPostedSnippets();
-          } catch (error) {
-            console.error('Error saving snippet:', error);
-            alert('Error saving snippet: ' + error.message);
-          }
-        });
-
-        // Initial render of posted snippets
-        renderPostedSnippets();
-      } catch (error) {
-        console.error('Firebase initialization failed:', error);
-        alert('Failed to initialize Firebase. Please check your network and try again.');
-      }
-    }
+        // Initial render
+        try {
+          renderPostedSnippets();
+        } catch (error) {
+          console.error('Error initializing snippet render:', error);
+          alert('Failed to load snippets: ' + error.message);
+        }
+      });
+    })(window.firebase || {});
   </script>
 </body>
 </html>
