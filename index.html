@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KAMBA Codex</title>
+  <title>KAMBA Codex - Welcome</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -11,231 +11,111 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
       background: linear-gradient(to bottom, #f5f7fa, #e4e7eb);
     }
-    .line-clamp-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
+    .hero-section {
+      background: linear-gradient(135deg, #6b7280 0%, #111827 100%);
+      color: white;
+      border-radius: 20px;
       overflow: hidden;
     }
-    .carousel-image { 
-      max-height: 250px; 
-      object-fit: cover; 
-      width: 100%; 
-      border-radius: 12px; 
+    .auth-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .snippet-card {
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .snippet-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    }
-    .modal-content {
-      animation: slideIn 0.3s ease-out;
-    }
-    @keyframes slideIn {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
     }
   </style>
 </head>
 <body class="min-h-screen">
   <header class="bg-white shadow-sm py-4 sticky top-0 z-10">
-    <div class="container mx-auto px-4 flex items-center">
-      <img src="logo.png" alt="KAMBA Codex Logo" class="h-12 mr-3">
-      <h1 class="text-2xl font-bold text-gray-900">KAMBA Codex</h1>
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center">
+        <img src="logo.png" alt="KAMBA Codex Logo" class="h-12 mr-3">
+        <h1 class="text-2xl font-bold text-gray-900">KAMBA Codex</h1>
+      </div>
     </div>
   </header>
-  <main class="container mx-auto px-4 py-8">
-    <div class="mb-8 flex justify-center">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search KAMBA Codex..."
-        class="w-full max-w-lg p-3 rounded-full border border-gray-200 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm shadow-sm"
-      />
-    </div>
-    <div id="snippetGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Snippets will be populated here -->
-    </div>
-  </main>
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-    <div class="bg-white p-8 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto modal-content">
-      <div class="flex items-center mb-6">
-        <img id="modalImage" src="" alt="Snippet Image" class="w-16 h-16 rounded-xl mr-4">
-        <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
-      </div>
-      <div class="relative mb-6">
-        <button id="prevImage" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-900/70 text-white p-2 rounded-full hover:bg-gray-900 transition"><</button>
-        <img id="carouselImage" src="" alt="Carousel Image" class="carousel-image">
-        <button id="nextImage" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-900/70 text-white p-2 rounded-full hover:bg-gray-900 transition">></button>
-      </div>
-      <p id="modalDescription" class="text-gray-700 mb-6 text-base leading-relaxed"></p>
-      <pre class="bg-gray-50 p-5 rounded-xl overflow-x-auto text-sm border border-gray-200"><code id="modalCode"></code></pre>
-      <div class="mt-6 flex space-x-3">
-        <button
-          id="copyCode"
-          class="px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition"
-        >
-          Copy Code
-        </button>
-        <button
-          id="closeModal"
-          class="px-5 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Sample code snippets data with placeholder images
-    const snippets = [
-      {
-        id: 1,
-        title: "Python Web Scraper",
-        language: "Python",
-        code: `import requests
-from bs4 import BeautifulSoup
-
-url = 'https://example.com'
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
-print(soup.title.text)`,
-        description: "A simple web scraper using Python's requests and BeautifulSoup to extract data from websites efficiently.",
-        image: "https://via.placeholder.com/150?text=Python",
-        carouselImages: [
-          "https://via.placeholder.com/600x250?text=Python+Preview+1",
-          "https://via.placeholder.com/600x250?text=Python+Preview+2",
-          "https://via.placeholder.com/600x250?text=Python+Preview+3"
-        ]
-      },
-      {
-        id: 2,
-        title: "JavaScript Counter",
-        language: "JavaScript",
-        code: `let count = 0;
-const counter = document.createElement('div');
-counter.innerHTML = \`<p>Count: \${count}</p><button onclick="count++; counter.querySelector('p').textContent = 'Count: ' + count;">Increment</button>\`;
-document.body.appendChild(counter);`,
-        description: "A basic JavaScript counter with dynamic DOM updates for interactive web applications.",
-        image: "https://via.placeholder.com/150?text=JS",
-        carouselImages: [
-          "https://via.placeholder.com/600x250?text=JS+Preview+1",
-          "https://via.placeholder.com/600x250?text=JS+Preview+2"
-        ]
-      },
-      {
-        id: 3,
-        title: "CSS Flexbox Layout",
-        language: "CSS",
-        code: `.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.item {
-  flex: 1;
-  margin: 10px;
-}`,
-        description: "A CSS Flexbox layout for creating responsive and flexible designs with ease.",
-        image: "https://via.placeholder.com/150?text=CSS",
-        carouselImages: [
-          "https://via.placeholder.com/600x250?text=CSS+Preview+1",
-          "https://via.placeholder.com/600x250?text=CSS+Preview+2",
-          "https://via.placeholder.com/600x250?text=CSS+Preview+3",
-          "https://via.placeholder.com/600x250?text=CSS+Preview+4"
-        ]
-      }
-    ];
-
-    // Function to create a snippet card
-    function createSnippetCard(snippet) {
-      const card = document.createElement('div');
-      card.className = 'bg-white p-5 rounded-xl shadow-sm snippet-card cursor-pointer';
-      card.innerHTML = `
-        <div class="flex items-center">
-          <img src="${snippet.image}" alt="${snippet.title}" class="w-14 h-14 rounded-xl mr-4">
-          <div>
-            <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
-            <p class="text-sm text-gray-500 line-clamp-2 mt-1">${snippet.description}</p>
-          </div>
+  <main class="container mx-auto px-4 py-12">
+    <section class="hero-section p-12 mb-12 text-center animate-fade-in">
+      <h2 class="text-4xl font-bold mb-4">Welcome to KAMBA Codex</h2>
+      <p class="text-lg mb-6">Discover and share beautifully crafted code snippets with a community of developers.</p>
+    </section>
+    <section class="auth-container p-8 max-w-md mx-auto">
+      <h3 class="text-xl font-semibold text-gray-900 mb-6">Sign In or Register</h3>
+      <div class="space-y-4">
+        <input
+          type="email"
+          id="email"
+          placeholder="Email"
+          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Password"
+          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        />
+        <div class="flex space-x-4">
+          <button
+            id="loginBtn"
+            class="flex-1 px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition"
+          >
+            Sign In
+          </button>
+          <button
+            id="registerBtn"
+            class="flex-1 px-5 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition"
+          >
+            Register
+          </button>
         </div>
-      `;
-      card.addEventListener('click', () => showModal(snippet));
-      return card;
-    }
+      </div>
+    </section>
+  </main>
 
-    // Function to show modal with snippet details
-    function showModal(snippet) {
-      const modal = document.getElementById('modal');
-      document.getElementById('modalImage').src = snippet.image;
-      document.getElementById('modalTitle').textContent = snippet.title;
-      document.getElementById('modalDescription').textContent = snippet.description;
-      document.getElementById('modalCode').textContent = snippet.code;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-      // Carousel setup
-      let currentImageIndex = 0;
-      const carouselImage = document.getElementById('carouselImage');
-      const updateCarousel = () => {
-        carouselImage.src = snippet.carouselImages[currentImageIndex];
-      };
-      updateCarousel();
+    const firebaseConfig = {
+      apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+      authDomain: "muah-feed.firebaseapp.com",
+      databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+      projectId: "muah-feed",
+      storageBucket: "muah-feed.firebasestorage.app",
+      messagingSenderId: "442314397706",
+      appId: "1:442314397706:web:a69e3958257fb13b3667f3",
+      measurementId: "G-S86S229F1T"
+    };
 
-      document.getElementById('prevImage').onclick = () => {
-        currentImageIndex = (currentImageIndex - 1 + snippet.carouselImages.length) % snippet.carouselImages.length;
-        updateCarousel();
-      };
-      document.getElementById('nextImage').onclick = () => {
-        currentImageIndex = (currentImageIndex + 1) % snippet.carouselImages.length;
-        updateCarousel();
-      };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-      modal.classList.remove('hidden');
-    }
-
-    // Function to filter and render snippets
-    function renderSnippets(searchTerm = '') {
-      const grid = document.getElementById('snippetGrid');
-      grid.innerHTML = '';
-      const filteredSnippets = snippets.filter(
-        snippet =>
-          snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          snippet.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      filteredSnippets.forEach(snippet => grid.appendChild(createSnippetCard(snippet)));
-    }
-
-    // Debounce function for search
-    function debounce(func, wait) {
-      let timeout;
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout);
-          func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
-    }
-
-    // Event listeners
-    document.getElementById('searchInput').addEventListener('input', debounce(e => renderSnippets(e.target.value), 300));
-    document.getElementById('closeModal').addEventListener('click', () => {
-      document.getElementById('modal').classList.add('hidden');
-    });
-    document.getElementById('copyCode').addEventListener('click', () => {
-      const code = document.getElementById('modalCode').textContent;
-      navigator.clipboard.writeText(code).then(() => {
-        const button = document.getElementById('copyCode');
-        button.textContent = 'Copied!';
-        setTimeout(() => { button.textContent = 'Copy Code'; }, 2000);
-      });
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.location.href = 'home.html';
+        })
+        .catch(error => alert('Login failed: ' + error.message));
     });
 
-    // Initial render
-    renderSnippets();
+    document.getElementById('registerBtn').addEventListener('click', () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.location.href = 'home.html';
+        })
+        .catch(error => alert('Registration failed: ' + error.message));
+    });
   </script>
 </body>
 </html>
