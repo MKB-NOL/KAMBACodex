@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KAMBA Codex - Home</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(to bottom, #f5f7fa, #e4e7eb);
+      margin: 0;
+      min-height: 100vh;
     }
     .line-clamp-2 {
       display: -webkit-box;
@@ -17,17 +18,14 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .carousel-image { 
-      max-height: 250px; 
-      object-fit: cover; 
-      width: 100%; 
-      border-radius: 12px; 
-    }
     .snippet-card {
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1.25rem;
+      border-radius: 12px;
+      cursor: pointer;
     }
     .snippet-card:hover {
       transform: translateY(-4px);
@@ -38,7 +36,104 @@
       backdrop-filter: blur(12px);
       animation: slideIn 0.3s ease-out;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2rem;
+      border-radius: 16px;
+      max-width: 48rem;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
     }
+    .traffic-lights {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .traffic-light {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .traffic-light.red { background: #ff5f56; }
+    .traffic-light.yellow { background: #ffbd2e; }
+    .traffic-light.green { background: #27c93f; }
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .container {
+      max-width: 80rem;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mt-6 { margin-top: 1.5rem; }
+    .grid { display: grid; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .sm\:grid-cols-2 { @media (min-width: 640px) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .lg\:grid-cols-3 { @media (min-width: 1024px) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .gap-6 { gap: 1.5rem; }
+    .w-full { width: 100%; }
+    .max-w-lg { max-width: 32rem; }
+    .p-3 { padding: 0.75rem; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .border { border-width: 1px; }
+    .border-gray-200 { border-color: #e5e7eb; }
+    .bg-white\/80 { background-color: rgba(255, 255, 255, 0.8); }
+    .bg-gray-50 { background-color: #f9fafb; }
+    .focus\:outline-none:focus { outline: none; }
+    .focus\:ring-2:focus { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); }
+    .focus\:ring-blue-400:focus { box-shadow: 0 0 0 2px #60a5fa; }
+    .text-sm { font-size: 0.875rem; }
+    .text-base { font-size: 1rem; }
+    .font-semibold { font-weight: 600; }
+    .text-gray-700 { color: #4b5563; }
+    .text-gray-900 { color: #1f2937; }
+    .text-gray-500 { color: #6b7280; }
+    .text-white { color: #ffffff; }
+    .bg-red-500 { background-color: #ef4444; }
+    .hover\:bg-red-600:hover { background-color: #dc2626; }
+    .bg-gray-200 { background-color: #e5e7eb; }
+    .hover\:bg-gray-300:hover { background-color: #d1d5db; }
+    .bg-blue-500 { background-color: #3b82f6; }
+    .hover\:bg-blue-600:hover { background-color: #2563eb; }
+    .transition { transition: all 0.2s ease; }
+    .text-2xl { font-size: 1.5rem; }
+    .font-bold { font-weight: 700; }
+    .leading-relaxed { line-height: 1.625; }
+    .h-12 { height: 3rem; }
+    .mr-4 { margin-right: 1rem; }
+    .fixed { position: fixed; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .bg-black\/60 { background-color: rgba(0, 0, 0, 0.6); }
+    .z-50 { z-index: 50; }
+    .hidden { display: none; }
+    .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .font-medium { font-weight: 500; }
+    .p-5 { padding: 1.25rem; }
+    .overflow-x-auto { overflow-x: auto; }
+    .space-x-3 > * + * { margin-left: 0.75rem; }
+    .backdrop-blur-sm { backdrop-filter: blur(4px); }
+    .max-w-3xl { max-width: 48rem; }
+    .max-h-\[90vh\] { max-height: 90vh; }
+    .overflow-y-auto { overflow-y: auto; }
     @keyframes slideIn {
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -49,183 +144,282 @@
   <header class="bg-white shadow-sm py-4 sticky top-0 z-10">
     <div class="container mx-auto px-4 flex items-center justify-between">
       <div class="flex items-center">
-        <img src="logo.png" alt="KAMBA Codex Logo" class="h-12 mr-3">
+        <div class="traffic-lights mr-4">
+          <div class="traffic-light red"></div>
+          <div class="traffic-light yellow"></div>
+          <div class="traffic-light green"></div>
+        </div>
+        <img src="logo.png" alt="KAMBA Codex Logo" class="h-12 mr-4">
         <h1 class="text-2xl font-bold text-gray-900">KAMBA Codex</h1>
       </div>
-      <button
-        id="logoutBtn"
-        class="px-5 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition"
-      >
+      <button id="logoutBtn" class="px-5 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition">
         Log Out
       </button>
     </div>
   </header>
   <main class="container mx-auto px-4 py-8">
     <div class="mb-8 flex justify-center">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search KAMBA Codex..."
-        class="w-full max-w-lg p-3 rounded-full border border-gray-200 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm shadow-sm"
-      />
+      <input type="text" id="searchInput" placeholder="Search KAMBA Codex..." class="w-full max-w-lg p-3 rounded-full border border-gray-200 bg-white/80 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm shadow-sm" />
     </div>
-    <div id="snippetGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Snippets will be populated here -->
-    </div>
+    <div id="snippetGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </main>
-  <div id="modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-    <div class="modal-content p-8 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+  <div id="modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+    <div class="modal-content">
       <div class="flex items-center mb-6">
-        <img id="modalImage" src="" alt="Snippet Image" class="w-16 h-16 rounded-xl mr-4">
         <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
       </div>
-      <div class="relative mb-6">
-        <button id="prevImage" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-900/70 text-white p-2 rounded-full hover:bg-gray-900 transition"><</button>
-        <img id="carouselImage" src="" alt="Carousel Image" class="carousel-image">
-        <button id="nextImage" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gray-900/70 text-white p-2 rounded-full hover:bg-gray-900 transition">></button>
+      <div id="youtubePlayer" class="mb-6" style="display: none;">
+        <iframe id="youtubeIframe" width="100%" height="200" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <p id="modalDescription" class="text-gray-700 mb-6 text-base leading-relaxed"></p>
       <pre class="bg-gray-50 p-5 rounded-xl overflow-x-auto text-sm border border-gray-200"><code id="modalCode"></code></pre>
       <div class="mt-6 flex space-x-3">
-        <button
-          id="copyCode"
-          class="px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition"
-        >
-          Copy Code
-        </button>
-        <button
-          id="closeModal"
-          class="px-5 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition"
-        >
-          Close
-        </button>
+        <button id="copyCode" class="px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition">Copy Code</button>
+        <button id="closeModal" class="px-5 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition">Close</button>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
-      authDomain: "muah-feed.firebaseapp.com",
-      databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
-      projectId: "muah-feed",
-      storageBucket: "muah-feed.firebasestorage.app",
-      messagingSenderId: "442314397706",
-      appId: "1:442314397706:web:a69e3958257fb13b3667f3",
-      measurementId: "G-S86S229F1T"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Check authentication state
-    onAuthStateChanged(auth, user => {
-      if (!user) window.location.href = 'index.html';
-    });
-
-    // Logout
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      signOut(auth).then(() => {
-        window.location.href = 'index.html';
-      }).catch(error => alert('Logout failed: ' + error.message));
-    });
-
-    // Function to create a snippet card
-    function createSnippetCard(snippet) {
-      const card = document.createElement('div');
-      card.className = 'snippet-card p-5 rounded-xl shadow-sm cursor-pointer';
-      card.innerHTML = `
-        <div class="flex items-center">
-          <img src="${snippet.image}" alt="${snippet.title}" class="w-14 h-14 rounded-xl mr-4">
-          <div>
-            <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
-            <p class="text-sm text-gray-500 line-clamp-2 mt-1">${snippet.description}</p>
-          </div>
-        </div>
-      `;
-      card.addEventListener('click', () => showModal(snippet));
-      return card;
-    }
-
-    // Function to show modal with snippet details
-    function showModal(snippet) {
-      const modal = document.getElementById('modal');
-      document.getElementById('modalImage').src = snippet.image;
-      document.getElementById('modalTitle').textContent = snippet.title;
-      document.getElementById('modalDescription').textContent = snippet.description;
-      document.getElementById('modalCode').textContent = snippet.code;
-
-      let currentImageIndex = 0;
-      const carouselImage = document.getElementById('carouselImage');
-      const updateCarousel = () => {
-        carouselImage.src = snippet.carouselImages[currentImageIndex];
-      };
-      updateCarousel();
-
-      document.getElementById('prevImage').onclick = () => {
-        currentImageIndex = (currentImageIndex - 1 + snippet.carouselImages.length) % snippet.carouselImages.length;
-        updateCarousel();
-      };
-      document.getElementById('nextImage').onclick = () => {
-        currentImageIndex = (currentImageIndex + 1) % snippet.carouselImages.length;
-        updateCarousel();
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+  <script>
+    (function KAMBA_HOME(fb) {
+      // Global error handler
+      window.onerror = function(msg, url, line, col, error) {
+        console.error('Script error:', { msg, url, line, col, error });
+        alert('An unexpected error occurred: ' + msg);
+        return false;
       };
 
-      modal.classList.remove('hidden');
-    }
-
-    // Function to fetch and render snippets
-    async function renderSnippets(searchTerm = '') {
-      const grid = document.getElementById('snippetGrid');
-      grid.innerHTML = '';
-      const querySnapshot = await getDocs(collection(db, 'snippets'));
-      const snippets = [];
-      querySnapshot.forEach(doc => {
-        snippets.push({ id: doc.id, ...doc.data() });
-      });
-      const filteredSnippets = snippets.filter(
-        snippet =>
-          snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          snippet.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      filteredSnippets.forEach(snippet => grid.appendChild(createSnippetCard(snippet)));
-    }
-
-    // Debounce function for search
-    function debounce(func, wait) {
-      let timeout;
-      return function executedFunction(...args) {
-        const later = () => {
-          clearTimeout(timeout);
-          func(...args);
+      // Initialize Firebase
+      let auth, db;
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+          authDomain: "muah-feed.firebaseapp.com",
+          databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+          projectId: "muah-feed",
+          storageBucket: "muah-feed.firebasestorage.app",
+          messagingSenderId: "442314397706",
+          appId: "1:442314397706:web:a69e3958257fb13b3667f3",
+          measurementId: "G-S86S229F1T"
         };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-      };
-    }
+        fb.initializeApp(firebaseConfig);
+        auth = fb.auth();
+        db = fb.firestore();
+      } catch (error) {
+        console.error('Firebase initialization failed:', error);
+        alert('Failed to initialize Firebase: ' + error.message);
+        return;
+      }
 
-    // Event listeners
-    document.getElementById('searchInput').addEventListener('input', debounce(e => renderSnippets(e.target.value), 300));
-    document.getElementById('closeModal').addEventListener('click', () => {
-      document.getElementById('modal').classList.add('hidden');
-    });
-    document.getElementById('copyCode').addEventListener('click', () => {
-      const code = document.getElementById('modalCode').textContent;
-      navigator.clipboard.writeText(code).then(() => {
-        const button = document.getElementById('copyCode');
-        button.textContent = 'Copied!';
-        setTimeout(() => { button.textContent = 'Copy Code'; }, 2000);
+      // Authentication check with timeout
+      try {
+        let authChecked = false;
+        auth.onAuthStateChanged(user => {
+          authChecked = true;
+          if (!user) {
+            console.warn('No user authenticated, redirecting to index.html');
+            window.location.href = 'index.html';
+          }
+        }, error => {
+          console.error('Authentication state error:', error);
+          alert('Error checking authentication: ' + error.message);
+        });
+        // Fallback if auth check doesn't resolve
+        setTimeout(() => {
+          if (!authChecked && !auth.currentUser) {
+            console.warn('Auth check timed out, redirecting to index.html');
+            window.location.href = 'index.html';
+          }
+        }, 3000);
+      } catch (error) {
+        console.error('Error setting up auth listener:', error);
+        alert('Failed to initialize authentication: ' + error.message);
+      }
+
+      // Wait for DOM
+      document.addEventListener('DOMContentLoaded', () => {
+        if (!fb || !fb.app) {
+          console.error('Firebase not loaded');
+          alert('Firebase failed to load. Please check your network.');
+          return;
+        }
+
+        // Logout
+        try {
+          const logoutBtn = document.getElementById('logoutBtn');
+          if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+              try {
+                auth.signOut().then(() => {
+                  console.log('User signed out successfully');
+                  window.location.href = 'index.html';
+                }).catch(error => {
+                  console.error('Logout failed:', error);
+                  alert('Logout failed: ' + error.message);
+                });
+              } catch (error) {
+                console.error('Error during logout:', error);
+                alert('Logout error: ' + error.message);
+              }
+            }, { once: true });
+          }
+        } catch (error) {
+          console.error('Error binding logout button:', error);
+          alert('Failed to set up logout: ' + error.message);
+        }
+
+        // Create snippet card
+        function createSnippetCard(snippet) {
+          const card = document.createElement('div');
+          card.className = 'snippet-card';
+          card.innerHTML = `
+            <div class="flex items-center">
+              <div>
+                <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
+                <p class="text-sm text-gray-500 line-clamp-2 mt-1">${snippet.description}</p>
+              </div>
+            </div>
+          `;
+          card.addEventListener('click', () => showModal(snippet), { once: true });
+          return card;
+        }
+
+        // Show modal
+        function showModal(snippet) {
+          try {
+            const modal = document.getElementById('modal');
+            document.getElementById('modalTitle').textContent = snippet.title;
+            document.getElementById('modalDescription').textContent = snippet.description;
+            document.getElementById('modalCode').textContent = snippet.code;
+
+            // YouTube player
+            const youtubePlayer = document.getElementById('youtubePlayer');
+            const youtubeIframe = document.getElementById('youtubeIframe');
+            if (snippet.youtubeLink) {
+              const videoId = snippet.youtubeLink.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^&?]+)/)?.[1];
+              if (videoId) {
+                youtubeIframe.src = `https://www.youtube.com/embed/${videoId}`;
+                youtubePlayer.style.display = 'block';
+              } else {
+                youtubePlayer.style.display = 'none';
+                console.warn('Invalid YouTube URL:', snippet.youtubeLink);
+              }
+            } else {
+              youtubePlayer.style.display = 'none';
+            }
+
+            // Copy code
+            const copyCodeBtn = document.getElementById('copyCode');
+            if (copyCodeBtn) {
+              copyCodeBtn.addEventListener('click', () => {
+                try {
+                  const code = document.getElementById('modalCode')?.textContent;
+                  navigator.clipboard.writeText(code).then(() => {
+                    copyCodeBtn.textContent = 'Copied!';
+                    setTimeout(() => { copyCodeBtn.textContent = 'Copy Code'; }, 2000);
+                  }).catch(error => {
+                    console.error('Copy failed:', error);
+                    alert('Failed to copy code: ' + error.message);
+                  });
+                } catch (error) {
+                  console.error('Error binding copy button:', error);
+                  alert('Copy error: ' + error.message);
+                }
+              }, { once: true });
+            }
+
+            modal.classList.remove('hidden');
+          } catch (error) {
+            console.error('Error displaying modal:', error);
+            alert('Failed to show snippet: ' + error.message);
+          }
+        }
+
+        // Fetch and render snippets
+        async function renderSnippets(searchTerm = '') {
+          const grid = document.getElementById('snippetGrid');
+          if (!grid) return;
+          grid.innerHTML = '';
+          try {
+            const querySnapshot = await db.collection('snippets').get();
+            const snippets = [];
+            querySnapshot.forEach(doc => {
+              snippets.push({ id: doc.id, ...doc.data() });
+            });
+            const filteredSnippets = snippets.filter(
+              snippet =>
+                snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                snippet.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            filteredSnippets.forEach(snippet => grid.appendChild(createSnippetCard(snippet)));
+          } catch (error) {
+            console.error('Error fetching snippets:', error);
+            alert('Failed to load snippets: ' + error.message);
+          }
+        }
+
+        // Debounce search
+        function debounce(func, wait) {
+          let timeout;
+          return function executedFunction(...args) {
+            const later = () => {
+              clearTimeout(timeout);
+              func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+          };
+        }
+
+        // Event listeners
+        try {
+          const searchInput = document.getElementById('searchInput');
+          if (searchInput) {
+            searchInput.addEventListener('input', debounce(e => {
+              try {
+                renderSnippets(e.target.value);
+              } catch (error) {
+                console.error('Error in search:', error);
+                alert('Search failed: ' + error.message);
+              }
+            }, 300), { once: true });
+          }
+        } catch (error) {
+          console.error('Error binding search input:', error);
+          alert('Failed to set up search: ' + error.message);
+        }
+
+        try {
+          const closeModal = document.getElementById('closeModal');
+          if (closeModal) {
+            closeModal.addEventListener('click', () => {
+              try {
+                document.getElementById('modal').classList.add('hidden');
+                document.getElementById('youtubePlayer').style.display = 'none';
+                document.getElementById('youtubeIframe').src = '';
+              } catch (error) {
+                console.error('Error closing modal:', error);
+                alert('Failed to close modal: ' + error.message);
+              }
+            }, { once: true });
+          }
+        } catch (error) {
+          console.error('Error binding close modal button:', error);
+          alert('Failed to set up modal close: ' + error.message);
+        }
+
+        // Initial render
+        try {
+          renderSnippets();
+        } catch (error) {
+          console.error('Error initializing snippet render:', error);
+          alert('Failed to load snippets: ' + error.message);
+        }
       });
-    });
-
-    // Initial render
-    renderSnippets();
+    })(window.firebase || {});
   </script>
 </body>
 </html>
-
