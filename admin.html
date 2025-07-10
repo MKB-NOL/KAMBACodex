@@ -6,6 +6,8 @@
   <title>KAMBA Codex - Admin</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/43.1.0/ckeditor5.umd.js"></script>
+  <link href="https://cdn.ckeditor.com/ckeditor5/43.1.0/ckeditor5.css" rel="stylesheet">
   <style>
     body { 
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
@@ -16,6 +18,14 @@
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 16px;
+    }
+    .ck-editor__editable { min-height: 150px; }
+    .snippet-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .snippet-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
@@ -42,8 +52,8 @@
     </div>
   </header>
   <main class="container mx-auto px-4 py-12">
-    <section class="admin-container p-8 max-w-2xl mx-auto animate-fade-in">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6">Add New Snippet</h2>
+    <section class="admin-container p-8 max-w-2xl mx-auto animate-fade-in mb-12">
+      <h2 id="formTitle" class="text-2xl font-bold text-gray-900 mb-6">Add New Snippet</h2>
       <div class="space-y-4">
         <input
           type="text"
@@ -69,30 +79,51 @@
         ></textarea>
         <input
           type="text"
-          id="image"
-          placeholder="Main Image URL"
+          id="youtubeLink"
+          placeholder="YouTube Link (e.g., https://www.youtube.com/watch?v=...)"
           class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
         />
-        <input
-          type="text"
-          id="carouselImages"
-          placeholder="Carousel Image URLs (comma-separated)"
-          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-        />
+        <div id="imageInputs" class="space-y-2">
+          <div class="flex space-x-2">
+            <input
+              type="text"
+              class="image-url w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+              placeholder="Image URL"
+            />
+            <button
+              class="remove-image px-3 py-2 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
         <button
-          id="addSnippetBtn"
+          id="addImageBtn"
+          class="px-5 py-2 bg-gray-200 text-gray-800 rounded-full text-sm font-medium hover:bg-gray-300 transition"
+        >
+          Add Another Image
+        </button>
+        <input type="hidden" id="editId" value="">
+        <button
+          id="submitBtn"
           class="w-full px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition"
         >
           Add Snippet
         </button>
       </div>
     </section>
+    <section class="admin-container p-8 max-w-2xl mx-auto animate-fade-in">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Posted Snippets</h2>
+      <div id="postedSnippets" class="space-y-4"></div>
+    </section>
   </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const { ClassicEditor, CodeBlock } = window.CKEDITOR;
 
     const firebaseConfig = {
       apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
@@ -109,6 +140,27 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Initialize CKEditor
+    let editor;
+    ClassicEditor
+      .create(document.querySelector('#code'), {
+        plugins: [CodeBlock],
+        toolbar: ['codeBlock'],
+        codeBlock: {
+          languages: [
+            { language: 'plaintext', label: 'Plain text' },
+            { language: 'javascript', label: 'JavaScript' },
+            { language: 'python', label: 'Python' },
+            { language: 'css', label: 'CSS' }
+          ]
+        }
+      })
+      .then(newEditor => {
+        editor = newEditor;
+        editor.isReadOnly = false;
+      })
+      .catch(error => console.error('CKEditor error:', error));
+
     // Check authentication state
     onAuthStateChanged(auth, user => {
       if (!user) window.location.href = 'index.html';
@@ -121,38 +173,159 @@
       }).catch(error => alert('Logout failed: ' + error.message));
     });
 
-    // Add snippet
-    document.getElementById('addSnippetBtn').addEventListener('click', async () => {
+    // Dynamic image inputs
+    document.getElementById('addImageBtn').addEventListener('click', () => {
+      const imageInputs = document.getElementById('imageInputs');
+      const newInput = document.createElement('div');
+      newInput.className = 'flex space-x-2';
+      newInput.innerHTML = `
+        <input
+          type="text"
+          class="image-url w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+          placeholder="Image URL"
+        />
+        <button
+          class="remove-image px-3 py-2 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition"
+        >
+          Remove
+        </button>
+      `;
+      imageInputs.appendChild(newInput);
+      newInput.querySelector('.remove-image').addEventListener('click', () => {
+        if (imageInputs.children.length > 1) newInput.remove();
+      });
+    });
+
+    // Render posted snippets
+    async function renderPostedSnippets() {
+      const postedSnippets = document.getElementById('postedSnippets');
+      postedSnippets.innerHTML = '';
+      const querySnapshot = await getDocs(collection(db, 'snippets'));
+      querySnapshot.forEach(doc => {
+        const snippet = { id: doc.id, ...doc.data() };
+        const card = document.createElement('div');
+        card.className = 'snippet-card p-4 rounded-xl bg-white/90 border border-gray-200 cursor-pointer';
+        card.innerHTML = `
+          <div class="flex items-center">
+            <img src="${snippet.images[0] || ''}" alt="${snippet.title}" class="w-12 h-12 rounded-xl mr-3">
+            <div>
+              <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
+              <p class="text-sm text-gray-500">${snippet.language}</p>
+            </div>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          document.getElementById('formTitle').textContent = 'Edit Snippet';
+          document.getElementById('submitBtn').textContent = 'Update Snippet';
+          document.getElementById('editId').value = snippet.id;
+          document.getElementById('title').value = snippet.title;
+          document.getElementById('language').value = snippet.language;
+          editor.setData(snippet.code);
+          document.getElementById('description').value = snippet.description;
+          document.getElementById('youtubeLink').value = snippet.youtubeLink || '';
+          const imageInputs = document.getElementById('imageInputs');
+          imageInputs.innerHTML = '';
+          snippet.images.forEach(url => {
+            const inputDiv = document.createElement('div');
+            inputDiv.className = 'flex space-x-2';
+            inputDiv.innerHTML = `
+              <input
+                type="text"
+                class="image-url w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                value="${url}"
+              />
+              <button
+                class="remove-image px-3 py-2 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition"
+              >
+                Remove
+              </button>
+            `;
+            imageInputs.appendChild(inputDiv);
+            inputDiv.querySelector('.remove-image').addEventListener('click', () => {
+              if (imageInputs.children.length > 1) inputDiv.remove();
+            });
+          });
+        });
+        postedSnippets.appendChild(card);
+      });
+    }
+
+    // Submit or update snippet
+    document.getElementById('submitBtn').addEventListener('click', async () => {
       const title = document.getElementById('title').value;
       const language = document.getElementById('language').value;
-      const code = document.getElementById('code').value;
+      const code = editor.getData();
       const description = document.getElementById('description').value;
-      const image = document.getElementById('image').value;
-      const carouselImages = document.getElementById('carouselImages').value.split(',').map(url => url.trim());
+      const youtubeLink = document.getElementById('youtubeLink').value;
+      const images = Array.from(document.querySelectorAll('.image-url')).map(input => input.value).filter(url => url);
+      const editId = document.getElementById('editId').value;
 
-      if (!title || !language || !code || !description || !image || !carouselImages.length) {
-        alert('Please fill in all fields.');
+      if (!title || !language || !code || !description || !images.length) {
+        alert('Please fill in all required fields.');
         return;
       }
 
       try {
-        await addDoc(collection(db, 'snippets'), {
-          title,
-          language,
-          code,
-          description,
-          image,
-          carouselImages
-        });
-        alert('Snippet added successfully!');
+        if (editId) {
+          await updateDoc(doc(db, 'snippets', editId), {
+            title,
+            language,
+            code,
+            description,
+            youtubeLink,
+            images
+          });
+          alert('Snippet updated successfully!');
+        } else {
+          await addDoc(collection(db, 'snippets'), {
+            title,
+            language,
+            code,
+            description,
+            youtubeLink,
+            images
+          });
+          alert('Snippet added successfully!');
+        }
+        document.getElementById('formTitle').textContent = 'Add New Snippet';
+        document.getElementById('submitBtn').textContent = 'Add Snippet';
+        document.getElementById('editId').value = '';
         document.getElementById('title').value = '';
         document.getElementById('language').value = '';
-        document.getElementById('code').value = '';
+        editor.setData('');
         document.getElementById('description').value = '';
-        document.getElementById('image').value = '';
-        document.getElementById('carouselImages').value = '';
+        document.getElementById('youtubeLink').value = '';
+        const imageInputs = document.getElementById('imageInputs');
+        imageInputs.innerHTML = `
+          <div class="flex space-x-2">
+            <input
+              type="text"
+              class="image-url w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+              placeholder="Image URL"
+            />
+            <button
+              class="remove-image px-3 py-2 bg-red-500 text-white rounded-full text-sm hover:bg-red-600 transition"
+            >
+              Remove
+            </button>
+          </div>
+        `;
+        imageInputs.querySelector('.remove-image').addEventListener('click', () => {
+          if (imageInputs.children.length > 1) imageInputs.children[0].remove();
+        });
+        await renderPostedSnippets();
       } catch (error) {
-        alert('Error adding snippet: ' + error.message);
+        alert('Error saving snippet: ' + error.message);
+      }
+    });
+
+    // Initial render of posted snippets
+    renderPostedSnippets();
+
+    // Remove image input event listeners
+    document.addEventListener('click', e => {
+      if (e.target.classList.contains('remove-image') && document.querySelectorAll('#imageInputs .flex').length > 1) {
+        e.target.parentElement.remove();
       }
     });
   </script>
