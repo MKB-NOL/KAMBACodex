@@ -34,6 +34,10 @@
     .animate-fade-in {
       animation: fadeIn 0.5s ease-out;
     }
+    .ck-theme-dark .ck-editor__editable {
+      background: #1f2937;
+      color: #e5e7eb;
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -67,9 +71,16 @@
           placeholder="Language (e.g., Python)"
           class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
         />
+        <div class="flex space-x-4 mb-4">
+          <label for="editorTheme" class="text-sm font-medium text-gray-700">Editor Theme:</label>
+          <select id="editorTheme" class="p-2 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
         <textarea
           id="code"
-          placeholder="Code"
+          placeholder="Paste or type code here..."
           class="w-full p-3 rounded-xl border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm h-32"
         ></textarea>
         <textarea
@@ -158,8 +169,27 @@
       .then(newEditor => {
         editor = newEditor;
         editor.isReadOnly = false;
+        // Enable plain text pasting without formatting
+        editor.editing.view.document.on('clipboardInput', (evt, data) => {
+          const text = data.dataTransfer.getData('text/plain');
+          editor.model.change(writer => {
+            writer.insertText(text, editor.model.document.selection.getFirstPosition());
+          });
+          evt.stop();
+        });
       })
       .catch(error => console.error('CKEditor error:', error));
+
+    // Theme toggle
+    document.getElementById('editorTheme').addEventListener('change', (e) => {
+      const theme = e.target.value;
+      const editorElement = document.querySelector('.ck-editor__editable');
+      if (theme === 'dark') {
+        editorElement.classList.add('ck-theme-dark');
+      } else {
+        editorElement.classList.remove('ck-theme-dark');
+      }
+    });
 
     // Check authentication state
     onAuthStateChanged(auth, user => {
