@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAMBA Codex - Admin</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: linear-gradient(to bottom, #f5f7fa, #e4e7eb);
+    }
+    .admin-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="bg-white shadow-sm py-4 sticky top-0 z-10">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center">
+        <img src="logo.png" alt="KAMBA Codex Logo" class="h-12 mr-3">
+        <h1 class="text-2xl font-bold text-gray-900">KAMBA Codex - Admin</h1>
+      </div>
+      <button
+        id="logoutBtn"
+        class="px-5 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition"
+      >
+        Log Out
+      </button>
+    </div>
+  </header>
+  <main class="container mx-auto px-4 py-12">
+    <section class="admin-container p-8 max-w-2xl mx-auto animate-fade-in">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Add New Snippet</h2>
+      <div class="space-y-4">
+        <input
+          type="text"
+          id="title"
+          placeholder="Snippet Title"
+          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        />
+        <input
+          type="text"
+          id="language"
+          placeholder="Language (e.g., Python)"
+          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        />
+        <textarea
+          id="code"
+          placeholder="Code"
+          class="w-full p-3 rounded-xl border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm h-32"
+        ></textarea>
+        <textarea
+          id="description"
+          placeholder="Description"
+          class="w-full p-3 rounded-xl border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm h-24"
+        ></textarea>
+        <input
+          type="text"
+          id="image"
+          placeholder="Main Image URL"
+          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        />
+        <input
+          type="text"
+          id="carouselImages"
+          placeholder="Carousel Image URLs (comma-separated)"
+          class="w-full p-3 rounded-full border border-gray-200 bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+        />
+        <button
+          id="addSnippetBtn"
+          class="w-full px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition"
+        >
+          Add Snippet
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+      authDomain: "muah-feed.firebaseapp.com",
+      databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+      projectId: "muah-feed",
+      storageBucket: "muah-feed.firebasestorage.app",
+      messagingSenderId: "442314397706",
+      appId: "1:442314397706:web:a69e3958257fb13b3667f3",
+      measurementId: "G-S86S229F1T"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Check authentication state
+    onAuthStateChanged(auth, user => {
+      if (!user) window.location.href = 'index.html';
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        window.location.href = 'index.html';
+      }).catch(error => alert('Logout failed: ' + error.message));
+    });
+
+    // Add snippet
+    document.getElementById('addSnippetBtn').addEventListener('click', async () => {
+      const title = document.getElementById('title').value;
+      const language = document.getElementById('language').value;
+      const code = document.getElementById('code').value;
+      const description = document.getElementById('description').value;
+      const image = document.getElementById('image').value;
+      const carouselImages = document.getElementById('carouselImages').value.split(',').map(url => url.trim());
+
+      if (!title || !language || !code || !description || !image || !carouselImages.length) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, 'snippets'), {
+          title,
+          language,
+          code,
+          description,
+          image,
+          carouselImages
+        });
+        alert('Snippet added successfully!');
+        document.getElementById('title').value = '';
+        document.getElementById('language').value = '';
+        document.getElementById('code').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('image').value = '';
+        document.getElementById('carouselImages').value = '';
+      } catch (error) {
+        alert('Error adding snippet: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
