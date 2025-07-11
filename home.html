@@ -180,11 +180,11 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
-  <script>
-    (function KAMBA_HOME(fb) {
+  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script type="text/javascript">
+    (function KAMBA_HOME() {
       // Global error handler
       window.onerror = function(msg, url, line, col, error) {
         console.error('Script error:', { msg, url, line, col, error });
@@ -195,6 +195,9 @@
       // Initialize Firebase
       let auth, db;
       try {
+        if (!window.firebase || !window.firebase.initializeApp) {
+          throw new Error('Firebase SDK not loaded');
+        }
         const firebaseConfig = {
           apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
           authDomain: "muah-feed.firebaseapp.com",
@@ -205,9 +208,9 @@
           appId: "1:442314397706:web:a69e3958257fb13b3667f3",
           measurementId: "G-S86S229F1T"
         };
-        fb.initializeApp(firebaseConfig);
-        auth = fb.auth();
-        db = fb.firestore();
+        window.firebase.initializeApp(firebaseConfig);
+        auth = window.firebase.auth();
+        db = window.firebase.firestore();
       } catch (error) {
         console.error('Firebase initialization failed:', error);
         alert('Failed to initialize Firebase: ' + error.message);
@@ -227,7 +230,6 @@
           console.error('Authentication state error:', error);
           alert('Error checking authentication: ' + error.message);
         });
-        // Fallback if auth check doesn't resolve
         setTimeout(() => {
           if (!authChecked && !auth.currentUser) {
             console.warn('Auth check timed out, redirecting to index.html');
@@ -241,12 +243,6 @@
 
       // Wait for DOM
       document.addEventListener('DOMContentLoaded', () => {
-        if (!fb || !fb.app) {
-          console.error('Firebase not loaded');
-          alert('Firebase failed to load. Please check your network.');
-          return;
-        }
-
         // Logout
         try {
           const logoutBtn = document.getElementById('logoutBtn');
@@ -419,7 +415,7 @@
           alert('Failed to load snippets: ' + error.message);
         }
       });
-    })(window.firebase || {});
+    })();
   </script>
 </body>
 </html>
