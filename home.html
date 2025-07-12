@@ -134,6 +134,26 @@
     .max-w-3xl { max-width: 48rem; }
     .max-h-\[90vh\] { max-height: 90vh; }
     .overflow-y-auto { overflow-y: auto; }
+    /* Link styling */
+    a {
+      color: #3b82f6;
+      text-decoration: underline;
+    }
+    /* Image styling */
+    .snippet-image {
+      width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .modal-image {
+      max-width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
     @keyframes slideIn {
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -168,10 +188,10 @@
       <div class="flex items-center mb-6">
         <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
       </div>
-      <div id="youtubePlayer" class="mb-6" style="display: none;">
-        <iframe id="youtubeIframe" width="100%" height="200" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div id="imageContainer" class="mb-6" style="display: none;">
+        <img id="modalImage" class="modal-image" src="" alt="Snippet Image">
       </div>
-      <p id="modalDescription" class="text-gray-700 mb-6 text-base leading-relaxed"></p>
+      <div id="modalDescription" class="text-gray-700 mb-6 text-base leading-relaxed"></div>
       <pre class="bg-gray-50 p-5 rounded-xl overflow-x-auto text-sm border border-gray-200"><code id="modalCode"></code></pre>
       <div class="mt-6 flex space-x-3">
         <button id="copyCode" class="px-5 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition">Copy Code</button>
@@ -241,6 +261,26 @@
         alert('Failed to initialize authentication: ' + error.message);
       }
 
+      // Function to make links clickable
+      function linkify(inputText) {
+        if (!inputText) return '';
+        let replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+        // URLs starting with http://, https://, or ftp://
+        replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+        replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+
+        // URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+        replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+        replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>');
+
+        // Change email addresses to mailto:: links.
+        replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim;
+        replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>');
+
+        return replacedText;
+      }
+
       // Wait for DOM
       document.addEventListener('DOMContentLoaded', () => {
         // Logout
@@ -260,7 +300,7 @@
                 console.error('Error during logout:', error);
                 alert('Logout error: ' + error.message);
               }
-            }, { once: true });
+            });
           }
         } catch (error) {
           console.error('Error binding logout button:', error);
@@ -271,15 +311,23 @@
         function createSnippetCard(snippet) {
           const card = document.createElement('div');
           card.className = 'snippet-card';
+          
+          // Create description with clickable links
+          let descriptionHtml = snippet.description;
+          try {
+            descriptionHtml = linkify(snippet.description);
+          } catch (e) {
+            console.error('Error linkifying description:', e);
+          }
+          
           card.innerHTML = `
-            <div class="flex items-center">
-              <div>
-                <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
-                <p class="text-sm text-gray-500 line-clamp-2 mt-1">${snippet.description}</p>
-              </div>
+            <div>
+              <h3 class="text-base font-semibold text-gray-900">${snippet.title}</h3>
+              <div class="text-sm text-gray-500 line-clamp-2 mt-1">${descriptionHtml}</div>
+              ${snippet.imageUrl ? `<img src="${snippet.imageUrl}" class="snippet-image" alt="${snippet.title}">` : ''}
             </div>
           `;
-          card.addEventListener('click', () => showModal(snippet), { once: true });
+          card.addEventListener('click', () => showModal(snippet));
           return card;
         }
 
@@ -288,23 +336,22 @@
           try {
             const modal = document.getElementById('modal');
             document.getElementById('modalTitle').textContent = snippet.title;
-            document.getElementById('modalDescription').textContent = snippet.description;
+            
+            // Set description with clickable links
+            const descriptionElement = document.getElementById('modalDescription');
+            descriptionElement.innerHTML = linkify(snippet.description);
+            
             document.getElementById('modalCode').textContent = snippet.code;
 
-            // YouTube player
-            const youtubePlayer = document.getElementById('youtubePlayer');
-            const youtubeIframe = document.getElementById('youtubeIframe');
-            if (snippet.youtubeLink) {
-              const videoId = snippet.youtubeLink.match(/(?:youtube\.com\/.*v=|youtu\.be\/)([^&?]+)/)?.[1];
-              if (videoId) {
-                youtubeIframe.src = `https://www.youtube.com/embed/${videoId}`;
-                youtubePlayer.style.display = 'block';
-              } else {
-                youtubePlayer.style.display = 'none';
-                console.warn('Invalid YouTube URL:', snippet.youtubeLink);
-              }
+            // Handle image display
+            const imageContainer = document.getElementById('imageContainer');
+            const modalImage = document.getElementById('modalImage');
+            if (snippet.imageUrl) {
+              modalImage.src = snippet.imageUrl;
+              modalImage.alt = snippet.title;
+              imageContainer.style.display = 'block';
             } else {
-              youtubePlayer.style.display = 'none';
+              imageContainer.style.display = 'none';
             }
 
             // Copy code
@@ -324,7 +371,7 @@
                   console.error('Error binding copy button:', error);
                   alert('Copy error: ' + error.message);
                 }
-              }, { once: true });
+              });
             }
 
             modal.classList.remove('hidden');
@@ -340,7 +387,7 @@
           if (!grid) return;
           grid.innerHTML = '';
           try {
-            const querySnapshot = await db.collection('snippets').get();
+            const querySnapshot = await db.collection('snippets').orderBy('createdAt', 'desc').get();
             const snippets = [];
             querySnapshot.forEach(doc => {
               snippets.push({ id: doc.id, ...doc.data() });
@@ -381,7 +428,7 @@
                 console.error('Error in search:', error);
                 alert('Search failed: ' + error.message);
               }
-            }, 300), { once: true });
+            }, 300));
           }
         } catch (error) {
           console.error('Error binding search input:', error);
@@ -394,13 +441,11 @@
             closeModal.addEventListener('click', () => {
               try {
                 document.getElementById('modal').classList.add('hidden');
-                document.getElementById('youtubePlayer').style.display = 'none';
-                document.getElementById('youtubeIframe').src = '';
               } catch (error) {
                 console.error('Error closing modal:', error);
                 alert('Failed to close modal: ' + error.message);
               }
-            }, { once: true });
+            });
           }
         } catch (error) {
           console.error('Error binding close modal button:', error);
